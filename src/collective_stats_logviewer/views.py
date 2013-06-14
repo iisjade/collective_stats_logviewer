@@ -27,7 +27,7 @@ def index():
     """Renders the index pages of collective stats. Queries the db to pull
     overall server load stats, as well as basic stats for each offending url.
     More detailed stats for each url are queried and served by
-    response_time_details() using an ajax request"""
+    response_time_details() using an ajax request."""
     # Assignment
     reqs_sec = query_reqs_sec()
     time_per_request = query_time_per_request()
@@ -48,7 +48,7 @@ def index():
 @app.route('/response_time_details/', methods=['GET'])
 def response_time_details():
     """Queries db for detailed stats for a specific url. This function is
-    called from an ajax request, which sends the url as a GET request
+    called from an ajax request (logview.js), which sends the url as a GET request
     and returns a json object with details about rendering time, num hits, etc
     for that url. This also returns the data necessary to render the graph for
     that url."""
@@ -72,7 +72,7 @@ def response_time_details():
 
 @app.route('/super_url', methods=['POST'])
 def super_url():
-	line = request.form["line"] 	
+	line = request.form["line"]
 	item_id = logs.do_it(line)
 	return jsonify(item_id = item_id)
 

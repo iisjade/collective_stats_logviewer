@@ -13,7 +13,7 @@ class Loader(object):
         self.api = "http://127.0.0.1:5000/super_url"
         self.machine_name = "Terminator"
 
-    def do_it(self):
+    def send_log_to_database(self):
         results = []
         for line in fileinput.input():
             if line.count('INFO collective.stats'):
@@ -25,7 +25,7 @@ class Loader(object):
         print results
         return results
 
-                
+
 if __name__ == "__main__":
     load = Loader()
-    load.do_it()
+    load.send_log_to_database()
