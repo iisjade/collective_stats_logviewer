@@ -11,8 +11,10 @@ app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///stats.db'
 db = SQLAlchemy(app)
 Base = declarative_base()
 
+
 def init_db():
-	db.create_all()
+    db.create_all()
+
 
 class Log(db.Model):
     __tablename__ = "logs"
@@ -46,11 +48,13 @@ class Log(db.Model):
         self.start_RSS = start_RSS
         self.end_RSS = end_RSS
 
+
 def query_number_of_requests():
     # Number of requests
     rows = db.session.query(Log)
     num_requests = rows.count()
     return num_requests
+
 
 def query_access_time():
     # Total access time of the server
@@ -62,23 +66,24 @@ def query_access_time():
         total_time = difference.seconds
     return total_time
 
+
 def query_reqs_sec():
     # Total access time
     total_time = query_access_time()
     if not total_time:
         return 0
-    
     num_requests = query_number_of_requests()
 
     #Converts to float if result will be less than 1
-    if num_requests<total_time:
+    if num_requests < total_time:
         num_requests = float(num_requests)
         total_time = float(total_time)
 
     # Number of requests made to the server per second
-    reqs_sec = num_requests/total_time
+    reqs_sec = num_requests / total_time
 
     return reqs_sec
+
 
 def query_time_per_request():
     # Summates rendering time
@@ -90,38 +95,62 @@ def query_time_per_request():
     num_requests = query_number_of_requests()
 
     #Converts to float if result will be less than 1
-    if total_rendering_time<num_requests:
+    if total_rendering_time < num_requests:
         total_rendering_time = float(total_rendering_time)
         num_requests = float(num_requests)
-    
     # Total time per request
-    time_per_request = total_rendering_time/num_requests
+    time_per_request = total_rendering_time / num_requests
     return time_per_request
+
 
 def query_optimal_requests():
     # Time per request
     time_per_request = query_time_per_request()
     if not time_per_request:
         return 0
-    
     # Total access time
-    total_time = query_access_time()   
-    
+    total_time = query_access_time()
     # Optimal requests
-    optimal_capacity = total_time * (1/time_per_request)
-    optimal_requests = optimal_capacity/total_time
+    optimal_capacity = total_time * (1 / time_per_request)
+    optimal_requests = optimal_capacity / total_time
     return optimal_requests
+
 
 def query_current_capacity():
     # Current capacity
     optimal_requests = query_optimal_requests()
     if not optimal_requests:
         return 0
-    return (query_reqs_sec()/optimal_requests) * 100
+    return (query_reqs_sec() / optimal_requests) * 100
+
 
 def get_average_render_time():
-    """Takes the webpages and returns average time rendered 
-        from the datbase""" 
+    """Takes the webpages and returns average time rendered
+        from the datbase"""
     average = db.session.query(func.avg(Log.publisher_time).label("average"), Log.url).group_by(Log.url).order_by("-average").limit(10).all()
     return average
+
+
+def get_response_time_details(url):
+    """Takes the url from the webpage and returns timestamp and render time"""
+    dict_list = []
+    response_time = db.session.query(Log.access_time.label("timestamp"), Log.publisher_time).filter(Log.url == url).order_by("timestamp").all()
+    for row in response_time:
+        time = row[0].ctime()
+        rt = row[1]
+        new_dict = dict(zip(('timestamp', 'render_time'), (time, rt)))
+        dict_list.append(new_dict)
+    return dict_list
+
+
+def get_overall_time(url):
+    """Gets the overall time needed for the url to be called"""
+    overall = db.session.query(func.sum(Log.publisher_time)).filter(Log.url == url).all()
+    return overall
+    
+
+def get_total_hits(url):
+    """Gets the total hits based the url recieved"""
+    num_rows = db.session.query(Log).filter(Log.url == url).count()
+    return num_rows
 

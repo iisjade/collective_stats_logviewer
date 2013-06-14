@@ -5,6 +5,9 @@ import fileinput
 import requests
 import logging
 
+# Set logging level to info so logging in do_it() prints to
+# console (default level is warning)
+logging.basicConfig(level=logging.INFO)
 
 class Loader(object):
     def __init__(self):
@@ -22,9 +25,6 @@ class Loader(object):
                 logging.info("Successfully added line with id %s" % result['item_id'])
                 results.append(result)
         fileinput.close()
-        print results
-        return results
-
 
 if __name__ == "__main__":
     load = Loader()
