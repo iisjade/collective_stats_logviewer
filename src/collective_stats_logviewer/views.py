@@ -6,7 +6,9 @@ from flask import jsonify
 from flask import request
 import logs
 from model import db
-from model import query_reqs_sec, query_time_per_request, query_optimal_requests, query_current_capacity, get_average_render_time, get_response_time_details, get_overall_time, get_total_hits
+from model import query_reqs_sec, query_time_per_request, query_optimal_requests, \
+    query_current_capacity, get_average_render_time, get_response_time_details, \
+    get_overall_time, get_total_hits, get_server_chokers, get_memory_hogs
 
 logging.basicConfig(level=logging.INFO)
 

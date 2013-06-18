@@ -11,10 +11,8 @@ app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///stats.db'
 db = SQLAlchemy(app)
 Base = declarative_base()
 
-
 def init_db():
     db.create_all()
-
 
 class Log(db.Model):
     __tablename__ = "logs"
@@ -147,10 +145,30 @@ def get_overall_time(url):
     """Gets the overall time needed for the url to be called"""
     overall = db.session.query(func.sum(Log.publisher_time)).filter(Log.url == url).all()
     return overall
-    
+
 
 def get_total_hits(url):
     """Gets the total hits based the url recieved"""
     num_rows = db.session.query(Log).filter(Log.url == url).count()
     return num_rows
+
+def get_server_chokers():
+    """Returns the ten most consuming URLs of processing time."""
+    # mock data
+    return [{'url': '/departments/name/', 'total_server_time': 246.88},
+            {'url': '/departments/ners/', 'total_server_time': 166.87}]
+
+def get_memory_hogs():
+    """Returns the ten most consuming of server RAM. Return a list of dicts
+    where each dict has keys of 'url' and 'RAM_consumed'.
+    '"""
+    result = db.session.query(Log.url, (Log.end_RSS - Log.start_RSS).label("memory_used")).\
+        order_by("-memory_used").limit(10).all()
+
+    # calculate the percentage memory used, need to find the total RAM to do this calculation
+    # insert this calculation below as percent_memory_used=(tuple_memory_used/total_RAM)
+
+    # convert to list of dicts
+    return [dict(url=tuple_url, percent_memory_used=tuple_memory_used) for (tuple_url,
+        tuple_memory_used) in result]
 
