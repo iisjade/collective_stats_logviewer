@@ -1,11 +1,14 @@
+import json
+import logging
 from flask import render_template
 from flask import Flask
 from flask import jsonify
 from flask import request
+import logs
 from model import db
 from model import query_reqs_sec, query_time_per_request, query_optimal_requests, query_current_capacity, get_average_render_time, get_response_time_details, get_overall_time, get_total_hits
-import logs
 
+logging.basicConfig(level=logging.INFO)
 
 class _DefaultSettings(object):
     USERNAME = 'world'
@@ -65,7 +68,8 @@ def response_time_details():
 
 @app.route('/super_url', methods=['POST'])
 def super_url():
-	line = request.form["line"]
-	item_id = logs.do_it(line)
-	return jsonify(item_id = item_id)
+    log_lines = json.loads(request.data)
+    logging.info('views.py -- Received request from file_upload.py, sending to database')
+    commited_logs = logs.do_it(log_lines)
+    return "%s lines commited to the database" % commited_logs
 
