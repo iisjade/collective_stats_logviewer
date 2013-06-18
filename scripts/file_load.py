@@ -1,4 +1,4 @@
-#! /usr/bin/python
+l#! /usr/bin/python
 
 import fileinput
 import json
@@ -16,7 +16,7 @@ class Loader(object):
         self.api = "http://127.0.0.1:5000/super_url"
         self.machine_name = "Terminator"
 
-    def do_it(self):
+    def send_to_database(self):
         log_lines = []
         for line in fileinput.input():
             if line.count('INFO collective.stats'):
@@ -37,4 +37,4 @@ class Loader(object):
 
 if __name__ == "__main__":
     load = Loader()
-    load.do_it()
+    load.send_to_database()
