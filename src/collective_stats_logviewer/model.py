@@ -85,8 +85,7 @@ def query_reqs_sec():
 
 def query_time_per_request():
     # Summates rendering time
-    rendering_time = db.session.query(func.sum(Log.publisher_time))
-    total_rendering_time = rendering_time[0][0]
+    total_rendering_time = db.session.query(func.sum(Log.publisher_time)).scalar()
     if not total_rendering_time:
         return 0
 
