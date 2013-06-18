@@ -1,4 +1,4 @@
-l#! /usr/bin/python
+#! /usr/bin/python
 
 import fileinput
 import json

@@ -123,10 +123,13 @@ def query_current_capacity():
 
 
 def get_average_render_time():
-    """Takes the webpages and returns average time rendered
-        from the datbase"""
-    average = db.session.query(func.avg(Log.publisher_time).label("average"), Log.url).group_by(Log.url).order_by("-average").limit(10).all()
-    return average
+    """Returns the 10 slowest URL in terms of average render time. Return a
+    list of dicts where each dict has keys of 'average_render_time' and 'url'.
+    """
+    result = db.session.query(func.avg(Log.publisher_time).label("average_render_time"),
+        Log.url).group_by(Log.url).order_by("-average_render_time").limit(10).all()
+    return [dict(average_render_time=tuple_average_render_time, url=tuple_url)
+            for (tuple_average_render_time, tuple_url) in result]
 
 
 def get_response_time_details(url):

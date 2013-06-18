@@ -37,8 +37,8 @@
           <li>
             <dl class="url-details">
               <dt class="url-help">
-                <a href="javascript:void(0);">{{ slow_page[1] }}</a>&rArr;
-                <span class="average">Average rendering time: {{ slow_page[0] }} seconds</span><!--Add javascript to add error classes based avg render time-->
+                <a href="javascript:void(0);">{{ slow_page.url }}</a>&rArr;
+                <span class="average">Average rendering time: {{ slow_page.average_render_time }} seconds</span><!--Add javascript to add error classes based avg render time-->
               </dt>
 
               <dd>Overall rendering time: <span class='overall'></span> seconds</dd>
