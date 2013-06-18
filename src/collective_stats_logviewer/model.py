@@ -169,7 +169,7 @@ def get_memory_hogs():
         order_by("-memory_used").limit(10).all()
 
     # calculate the percentage memory used, need to find the total RAM to do this calculation
-    # insert this calculation below as percent_memory_used=(tuple_memory_used/total_RAM)
+    # todo: insert this calculation below as percent_memory_used=(tuple_memory_used/total_RAM)
 
     # convert to list of dicts
     return [dict(url=tuple_url, percent_memory_used=tuple_memory_used) for (tuple_url,
