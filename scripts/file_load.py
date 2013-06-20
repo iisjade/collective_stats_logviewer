@@ -16,7 +16,7 @@ class Loader(object):
         self.api = "http://127.0.0.1:5000/super_url"
         self.machine_name = "Terminator"
 
-    def do_it(self):
+    def send_to_database(self):
         log_lines = []
         for line in fileinput.input():
             if line.count('INFO collective.stats'):
@@ -26,7 +26,7 @@ class Loader(object):
                 if len(log_lines) == 10000:
                     logging.info('file_upload.py -- Sending %s lines to super_url' % len(log_lines))
                     response = requests.post(self.api, data=json.dumps(log_lines))
-                    log_lines = [] 
+                    log_lines = []
         # Upon exiting the for loop, there's a good chance there will be leftover
         # lines inside of log_lines. Check to make sure that's the case, and send
         # them over.
@@ -35,7 +35,6 @@ class Loader(object):
             response = requests.post(self.api, data=json.dumps(log_lines))
         fileinput.close()
 
- 
 if __name__ == "__main__":
     load = Loader()
-    load.do_it()
+    load.send_to_database()

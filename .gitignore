@@ -13,3 +13,4 @@ bin
 buildout-cache
 .DS_Store
 eggs
+reminders

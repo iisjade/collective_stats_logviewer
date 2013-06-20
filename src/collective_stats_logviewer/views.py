@@ -6,7 +6,9 @@ from flask import jsonify
 from flask import request
 import logs
 from model import db
-from model import query_reqs_sec, query_time_per_request, query_optimal_requests, query_current_capacity, get_average_render_time, get_response_time_details, get_overall_time, get_total_hits
+from model import query_reqs_sec, query_time_per_request, query_optimal_requests, \
+    query_current_capacity, get_average_render_time, get_response_time_details, \
+    get_overall_time, get_total_hits, get_server_chokers, get_memory_hogs
 
 logging.basicConfig(level=logging.INFO)
 
@@ -30,7 +32,7 @@ def index():
     """Renders the index pages of collective stats. Queries the db to pull
     overall server load stats, as well as basic stats for each offending url.
     More detailed stats for each url are queried and served by
-    response_time_details() using an ajax request"""
+    response_time_details() using an ajax request."""
     # Assignment
     reqs_sec = query_reqs_sec()
     time_per_request = query_time_per_request()
@@ -43,15 +45,14 @@ def index():
     data_store['slow_pages'] = average_render_time
     data_store['server_chokers'] = [{'url': '/departments/name/', 'total_server_time': 246.88},
                                    {'url': '/departments/ners/', 'total_server_time': 166.87}]
-    data_store['memory_hogs'] = [{'url': '/departments/cheme/', 'memory_used': 8.76},
-                                 {'url': '/departments/name/', 'memory_used': 8.59}]
+    data_store['memory_hogs'] = get_memory_hogs()
     return render_template("index.html", data=data_store)
 
 
 @app.route('/response_time_details/', methods=['GET'])
 def response_time_details():
     """Queries db for detailed stats for a specific url. This function is
-    called from an ajax request, which sends the url as a GET request
+    called from an ajax request (logview.js), which sends the url as a GET request
     and returns a json object with details about rendering time, num hits, etc
     for that url. This also returns the data necessary to render the graph for
     that url."""
