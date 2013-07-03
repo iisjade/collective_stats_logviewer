@@ -37,7 +37,7 @@
           <li>
             <dl class="url-details">
               <dt class="url-help">
-                <a href="javascript:void(0);">{{ slow_page.url }}</a>&rArr;
+                <a href="javascript:void(0);" data-url="{{ slow_page.url }}">{{ slow_page.pretty_url }}</a>&rArr;
                 <span class="average">Average rendering time: {{ slow_page.average_render_time| round(2, 'common') }} seconds</span><!--Add javascript to add error classes based avg render time-->
               </dt>
 
@@ -87,8 +87,8 @@
           <li>
             <dl class="url-details">
               <dt class="url-help">
-                <a href="javascript:void(0);">{{ memory_hog.url }}</a>&rArr;
-                <span class="percent-memory">Percent of Memory Used: {{ memory_hog.percent_memory_used }}%</span><!--Add javascript to add error classes based avg render time-->
+                <a href="javascript:void(0);" data-url="{{ memory_hog.url }}">{{ memory_hog.pretty_url }}</a>&rArr;
+                <span class="percent-memory">Percent of Memory Used: {{ memory_hog.percent_memory_used |  round(2, 'common')}}%</span><!--Add javascript to add error classes based avg render time-->
               </dt>
               <dd>Total time spent rending this page: <span class='overall'></span> seconds</dd>
               <dd>Average time to render: <span class="avg"></span> seconds</dd>

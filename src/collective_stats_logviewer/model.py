@@ -127,7 +127,7 @@ def get_average_render_time():
     """
     result = db.session.query(func.avg(Log.publisher_time).label("average_render_time"),
         Log.url).group_by(Log.url).order_by("-average_render_time").limit(10).all()
-    return [dict(average_render_time=tuple_average_render_time, url=tuple_url)
+    return [dict(average_render_time=tuple_average_render_time, url=tuple_url, pretty_url=clean_url(tuple_url))
             for (tuple_average_render_time, tuple_url) in result]
 
 
@@ -145,8 +145,7 @@ def get_response_time_details(url):
 
 def get_overall_time(url):
     """Gets the overall time needed for the url to be called"""
-    overall = db.session.query(func.sum(Log.publisher_time)).filter(Log.url == url).all()
-    return overall
+    return db.session.query(func.sum(Log.publisher_time)).filter(Log.url == url).all()
 
 
 def get_total_hits(url):
@@ -167,10 +166,21 @@ def get_memory_hogs():
     result = db.session.query(Log.url, (Log.end_RSS - Log.start_RSS).label("memory_used")).\
         order_by("-memory_used").limit(10).all()
 
-    # calculate the percentage memory used, need to find the total RAM to do this calculation
-    # todo: insert this calculation below as percent_memory_used=(tuple_memory_used/total_RAM)
+    total_ram = db.session.query(func.sum(Log.end_RSS - Log.start_RSS)).scalar()
 
-    # convert to list of dicts
-    return [dict(url=tuple_url, percent_memory_used=tuple_memory_used) for (tuple_url,
-        tuple_memory_used) in result]
+    return [dict(url=tuple_url, pretty_url=clean_url(tuple_url), percent_memory_used=(tuple_memory_used/total_ram) * 100) for (tuple_url, tuple_memory_used) in result]
 
+def clean_url(url):
+    """
+    translate a virtual url host into something readable
+    e.g /VirtualHostBase/http/che.engin.umich.edu:80/engin/departments/cheme/VirtualHostRoot/
+        becomes http://che.engin.umich.edu
+    """
+    if url.count("VirtualHostBase"):
+        parts = url.split("/")
+        protocol = parts[2]
+        url = parts[3].split(":")[0]
+        trail = parts[-1] != "VirtualHostRoot" and parts[-1] or ""
+        return "%s://%s/%s"%(protocol, url, trail)
+
+    return url

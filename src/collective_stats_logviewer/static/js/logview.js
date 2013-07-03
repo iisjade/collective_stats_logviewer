@@ -9,7 +9,7 @@ jQuery(document).ready(function() {
         $(this).parents('dl').find('dd').toggle()
 
         // Grabs the url of the link that was clicked
-        url = $(this).find('a').text()
+        url = $(this).find('a').attr("data-url")
 
         // Assigns graph_div to the corresponding div that will be used
         // to render the graph for the link
