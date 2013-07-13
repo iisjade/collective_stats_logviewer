@@ -43,8 +43,7 @@ def index():
     data_store = {}
     data_store['instance_stats'] = {'reqs_sec': reqs_sec, 'time_per_request': time_per_request, 'optimal_requests': optimal_requests, 'cc_percentage': current_capacity}
     data_store['slow_pages'] = average_render_time
-    data_store['server_chokers'] = [{'url': '/departments/name/', 'total_server_time': 246.88},
-                                   {'url': '/departments/ners/', 'total_server_time': 166.87}]
+    data_store['server_chokers'] = get_server_chokers()
     data_store['memory_hogs'] = get_memory_hogs()
     return render_template("index.html", data=data_store)
 
